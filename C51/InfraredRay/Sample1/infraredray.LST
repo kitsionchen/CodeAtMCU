@@ -1,0 +1,177 @@
+C51 COMPILER V9.00   INFRAREDRAY                                                           07/12/2011 17:03:07 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE INFRAREDRAY
+OBJECT MODULE PLACED IN infraredray.OBJ
+COMPILER INVOKED BY: D:\czf\softwares\C51_Keil4\C51\BIN\C51.EXE infraredray.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          /*****************************************************************************
+   2          红外线遥控器按键检测程序.
+   3          通过检测两次下降沿之间的时间差判断接受到的数据位.
+   4          具有数据重发功能,但是数据的重发有点频繁.
+   5          使用晶震频率为11.0592MHz,所有定时值都是基于这个频率计算.
+   6          占用很少量的CPU时间,使用了外部中断0接受数据,定时器1进行计数,
+   7          状态机:
+   8              1.如果时间差=0,由空闲态进入接受态
+   9              2.如果时间差>1ms and <1.3ms,收到数据0
+  10              3.如果时间差>2ms and <2.5ms,收到数据1
+  11              4.如果时间差>13.2ms and <13.8ms,收到开始位
+  12              5.如果时间差>12.2ms and <12.8ms,收到停止位(没有检测)
+  13              6.如果时间定时器溢出(时间差>20ms),进入空闲状态
+  14          IR6222遥控芯片接收程序：
+  15          占用以下资源：
+  16          1. 遥控使用外部中断0，接P3.2口
+  17          2. 遥控使用定时计数器1
+  18           ****************************************************************************/
+  19          #include "infraredray.h"
+  20          
+  21          #define TIME_0_00MS    0x0000
+  22          #define TIME_1_00MS    0x0399
+  23          #define TIME_1_13MS    0x0469
+  24          #define TIME_2_00MS    0x07cf
+  25          #define TIME_2_50MS    0x09c3
+  26          #define TIME_13_2MS    0x338f
+  27          #define TIME_20_0MS    0x4e1f
+  28          #define TIME_9_00MS    0x2066
+  29          #define TIME_12_3MS    0x300c
+  30          #define TIME_14_0MS    0x3266
+  31          #define TIME_15_0MS    0x3a98
+  32          #define TIME1_LOAD     (0xffff - TIME_20_0MS)
+  33          
+  34          // 红外接收的状态码
+  35          #define IR_NOSIGNAL        0x00    //无红外信号状态
+  36          #define IR_HEADCHK         0x01    //红外接收头，引导码状态
+  37          #define IR_DATACHK         0x02    //接收数据状态
+  38          #define IR_RECEIVE_OK      0x03    //接收完成32位状态
+  39          #define IR_RECEIVE_ERROR   0x04    //接收错误状态
+  40          
+  41          uchar irok;
+  42          uchar irdata;
+  43          uchar ircheck = 0;
+  44          uchar ir_bit_cnt = 0;
+  45          unsigned long irbuf = 0;
+  46          
+  47          /*****************************************************************************
+  48          功能：红外接收程序初始化
+  49          返回：返回32位红外码，包含系统码
+  50           ****************************************************************************/
+  51          void irInit(void) {
+  52   1        IP |= 0x01;
+  53   1        IE |= 0x83;
+  54   1        TCON |= 0x11;
+  55   1        TMOD |= 0x01;
+C51 COMPILER V9.00   INFRAREDRAY                                                           07/12/2011 17:03:07 PAGE 2   
+
+  56   1        TH0 = TIME1_LOAD >> 8;
+  57   1        TL0 = TIME1_LOAD & 0xff;
+  58   1      }
+  59          
+  60          /*****************************************************************************
+  61          功能：检测红外码
+  62          返回：1：有红外信号，0：无红外信号
+  63          ****************************************************************************/
+  64          uchar irTest(void) {
+  65   1        uchar ok = irok;
+  66   1        irok = 0;
+  67   1        return ok;
+  68   1      }
+  69          
+  70          /*****************************************************************************
+  71          功能：获取8位红外数据码
+  72          返回：返回红外数据码
+  73           ****************************************************************************/
+  74          uchar irGetDataCode(void) {
+  75   1        irok = 0;
+  76   1        return irdata;
+  77   1      }
+  78          
+  79          /*****************************************************************************
+  80          功能：获取32位红外码，包含系统码
+  81          返回：返回32位红外码，顺序：16位系统码，8位数据码，8位数据反码
+  82           ****************************************************************************/
+  83          #if GET_CODE32
+              unsigned long irGetAllCode(void) {
+                irok = 0;
+                return irbuf;
+              }
+              #endif
+  89          
+  90          /*****************************************************************************
+  91          功能：红外解码程序（外中断服务程序）
+  92          描述：遥控使用外部中断0，接P3.2口
+  93           ****************************************************************************/
+  94          void int0Isr(void) interrupt 0 {
+  95   1        unsigned int timer;
+  96   1        EX0 = 0;    // 关外中断，防止错误
+  97   1      
+  98   1        if (ircheck == IR_NOSIGNAL) {    // 引导脉冲第一次引起中断，把计数器清除
+  99   2          TR0 = 0;    // 停止计数器
+ 100   2          TH0 = TIME1_LOAD >> 8;    //重赋定时初值
+ 101   2          TL0 = TIME1_LOAD & 0xff;  //重赋定时初值
+ 102   2          TR0 = 1;    // 开启计数器
+ 103   2          ircheck = IR_HEADCHK;    //状态切换到数据码检测
+ 104   2        } else {    // 如果不是引导脉冲第一次引起中断，则把计数器值读出来供下面比较
+ 105   2          TR0 = 0;
+ 106   2          timer = ((TH0 << 8) | TL0) - TIME1_LOAD;
+ 107   2          TH0 = TIME1_LOAD >> 8;
+ 108   2          TL0 = TIME1_LOAD & 0xff;
+ 109   2          TR0 = 1;
+ 110   2        }
+ 111   1      
+ 112   1        if (ircheck == IR_HEADCHK) {    //判断引导脉冲9+4.5=13.5ms 
+ 113   2          if (timer > TIME_12_3MS && timer < TIME_15_0MS) {
+ 114   3            ircheck = IR_DATACHK;
+ 115   3          }
+ 116   2          ir_bit_cnt = 0;
+ 117   2        } else if (ircheck == IR_DATACHK) {
+C51 COMPILER V9.00   INFRAREDRAY                                                           07/12/2011 17:03:07 PAGE 3   
+
+ 118   2          if (timer > TIME_1_00MS && timer < TIME_1_13MS) {    //接收的数据位0
+ 119   3            ir_bit_cnt++;
+ 120   3            irbuf = (irbuf << 1);    //把数据装入irbuf
+ 121   3            if (ir_bit_cnt == 32) {
+ 122   4                      ircheck = IR_NOSIGNAL;    //回到无状态
+ 123   4            }
+ 124   3              } else if (timer > TIME_2_00MS && timer < TIME_2_50MS) {    //接收数据位1
+ 125   3            ir_bit_cnt++;
+ 126   3            irbuf = (irbuf << 1) | 1;
+ 127   3            if (ir_bit_cnt == 32) {
+ 128   4              ircheck = IR_NOSIGNAL;
+ 129   4            }
+ 130   3          }
+ 131   2        }
+ 132   1        EX0 = 1;
+ 133   1      }
+ 134          
+ 135          /*****************************************************************************
+ 136          功能：定时计数，红外码校验程序（定时器1中断服务程序）
+ 137           ****************************************************************************/
+ 138          void time0Isr(void) interrupt 1 {
+ 139   1        TH0 = TIME1_LOAD >> 8;
+ 140   1        TL0 = TIME1_LOAD & 0xff;
+ 141   1      
+ 142   1        //校验数据码和数据反码
+ 143   1        if (((irbuf >> 8) & 0xff) == ((~(irbuf >> 0)) & 0xff)) {
+ 144   2          irdata = (irbuf >> 8) & 0xff;
+ 145   2          irok = 1;
+ 146   2        }
+ 147   1      
+ 148   1        TR0 = 0;
+ 149   1      }
+ 150          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    396    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      8    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

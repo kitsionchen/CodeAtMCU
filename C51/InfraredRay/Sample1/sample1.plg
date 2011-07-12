@@ -1,0 +1,33 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Project:</h2>
+D:\czf\CodeAtMCU\C51\InfraredRay\Sample1\sample1.uvproj
+Project File Date:  07/12/2011
+
+<h2>Output:</h2>
+Build target 'Target 1'
+assembling STARTUP.A51...
+compiling main.c...
+compiling infraredray.c...
+infraredray.c(80): warning C322: unknown identifier
+INFRAREDRAY.C(110): error C202: 'TIME_12_3MS': undefined identifier
+INFRAREDRAY.C(119): error C202: 'NOSIGNAL': undefined identifier
+INFRAREDRAY.C(125): error C202: 'NOSIGNAL': undefined identifier
+Target not created
+Build target 'Target 1'
+compiling infraredray.c...
+infraredray.c(80): warning C322: unknown identifier
+INFRAREDRAY.C(110): error C202: 'TIME_12_3MS': undefined identifier
+Target not created
+Build target 'Target 1'
+compiling main.c...
+compiling infraredray.c...
+INFRAREDRAY.C(110): error C202: 'TIME_12_3MS': undefined identifier
+Target not created
+Build target 'Target 1'
+compiling infraredray.c...
+linking...
+Program Size: data=17.0 xdata=0 code=642
+"sample1" - 0 Error(s), 0 Warning(s).

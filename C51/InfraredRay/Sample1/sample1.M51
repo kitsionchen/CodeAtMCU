@@ -1,0 +1,263 @@
+BL51 BANKED LINKER/LOCATER V6.22                                                        07/12/2011  17:03:07  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
+D:\CZF\SOFTWARES\C51_KEIL4\C51\BIN\BL51.EXE STARTUP.obj, main.obj, infraredray.obj TO sample1 RAMSIZE (256)
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  STARTUP.obj (?C_STARTUP)
+  main.obj (MAIN)
+  infraredray.obj (INFRAREDRAY)
+  D:\CZF\SOFTWARES\C51_KEIL4\C51\LIB\C51S.LIB (?C_INIT)
+  D:\CZF\SOFTWARES\C51_KEIL4\C51\LIB\C51S.LIB (?C?LNOT)
+  D:\CZF\SOFTWARES\C51_KEIL4\C51\LIB\C51S.LIB (?C?ULCMP)
+  D:\CZF\SOFTWARES\C51_KEIL4\C51\LIB\C51S.LIB (?C?ULSHR)
+  D:\CZF\SOFTWARES\C51_KEIL4\C51\LIB\C51S.LIB (?C?LSHL)
+
+
+LINK MAP OF MODULE:  sample1 (?C_STARTUP)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0008H     UNIT         ?DT?INFRAREDRAY
+            IDATA   0010H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     0003H     ABSOLUTE     
+                    0006H     0005H                  *** GAP ***
+            CODE    000BH     0003H     ABSOLUTE     
+            CODE    000EH     00E3H     UNIT         ?PR?INT0ISR?INFRAREDRAY
+            CODE    00F1H     008CH     UNIT         ?C_C51STARTUP
+            CODE    017DH     008AH     UNIT         ?PR?TIME0ISR?INFRAREDRAY
+            CODE    0207H     0044H     UNIT         ?C?LIB_CODE
+            CODE    024BH     0013H     UNIT         ?PR?IRINIT?INFRAREDRAY
+            CODE    025EH     0010H     UNIT         ?PR?MAIN?MAIN
+            CODE    026EH     000DH     UNIT         ?C_INITSEG
+            CODE    027BH     0006H     UNIT         ?PR?IRTEST?INFRAREDRAY
+            CODE    0281H     0006H     UNIT         ?PR?IRGETDATACODE?INFRAREDRAY
+
+
+
+OVERLAY MAP OF MODULE:   sample1 (?C_STARTUP)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?MAIN
+  +--> ?C_INITSEG
+
+?PR?MAIN?MAIN
+  +--> ?PR?IRINIT?INFRAREDRAY
+BL51 BANKED LINKER/LOCATER V6.22                                                      07/12/2011  17:03:07  PAGE 2
+
+
+  +--> ?PR?IRTEST?INFRAREDRAY
+  +--> ?PR?IRGETDATACODE?INFRAREDRAY
+
+
+
+SYMBOL TABLE OF MODULE:  sample1 (?C_STARTUP)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        ?C_STARTUP
+  C:00F1H         SEGMENT       ?C_C51STARTUP
+  I:0010H         SEGMENT       ?STACK
+  C:0000H         PUBLIC        ?C_STARTUP
+  D:00E0H         SYMBOL        ACC
+  D:00F0H         SYMBOL        B
+  D:0083H         SYMBOL        DPH
+  D:0082H         SYMBOL        DPL
+  N:0000H         SYMBOL        IBPSTACK
+  N:0100H         SYMBOL        IBPSTACKTOP
+  N:0080H         SYMBOL        IDATALEN
+  C:00F4H         SYMBOL        IDATALOOP
+  N:0000H         SYMBOL        PBPSTACK
+  N:0100H         SYMBOL        PBPSTACKTOP
+  N:0000H         SYMBOL        PDATALEN
+  N:0000H         SYMBOL        PDATASTART
+  N:0000H         SYMBOL        PPAGE
+  N:0000H         SYMBOL        PPAGEENABLE
+  D:00A0H         SYMBOL        PPAGE_SFR
+  D:0081H         SYMBOL        SP
+  C:00F1H         SYMBOL        STARTUP1
+  N:0000H         SYMBOL        XBPSTACK
+  N:0000H         SYMBOL        XBPSTACKTOP
+  N:0000H         SYMBOL        XDATALEN
+  N:0000H         SYMBOL        XDATASTART
+  C:0000H         LINE#         126
+  C:00F1H         LINE#         133
+  C:00F3H         LINE#         134
+  C:00F4H         LINE#         135
+  C:00F5H         LINE#         136
+  C:00F7H         LINE#         185
+  C:00FAH         LINE#         196
+  -------         ENDMOD        ?C_STARTUP
+
+  -------         MODULE        MAIN
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0090H         PUBLIC        P1
+  D:00B0H         PUBLIC        P3
+  D:00A8H         PUBLIC        IE
+  D:00B8H         PUBLIC        IP
+  C:025EH         PUBLIC        main
+  D:0098H         PUBLIC        SCON
+  D:0088H         PUBLIC        TCON
+  D:00C8H         PUBLIC        T2CON
+  D:00D0H         PUBLIC        PSW
+  -------         PROC          MAIN
+  C:025EH         LINE#         3
+BL51 BANKED LINKER/LOCATER V6.22                                                      07/12/2011  17:03:07  PAGE 3
+
+
+  C:025EH         LINE#         4
+  C:0261H         LINE#         6
+  C:0261H         LINE#         7
+  C:0267H         LINE#         8
+  C:026CH         LINE#         9
+  C:026CH         LINE#         10
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        MAIN
+
+  -------         MODULE        INFRAREDRAY
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  C:027BH         PUBLIC        irTest
+  D:0090H         PUBLIC        P1
+  D:00B0H         PUBLIC        P3
+  D:00A8H         PUBLIC        IE
+  C:017DH         PUBLIC        time0Isr
+  D:00B8H         PUBLIC        IP
+  D:0008H         PUBLIC        irbuf
+  D:000CH         PUBLIC        ir_bit_cnt
+  C:000EH         PUBLIC        int0Isr
+  D:0098H         PUBLIC        SCON
+  D:0089H         PUBLIC        TMOD
+  D:0088H         PUBLIC        TCON
+  D:000DH         PUBLIC        irok
+  D:008CH         PUBLIC        TH0
+  B:00A8H.0       PUBLIC        EX0
+  D:008AH         PUBLIC        TL0
+  B:0088H.4       PUBLIC        TR0
+  D:000EH         PUBLIC        ircheck
+  D:00C8H         PUBLIC        T2CON
+  C:024BH         PUBLIC        irInit
+  D:000FH         PUBLIC        irdata
+  C:0281H         PUBLIC        irGetDataCode
+  D:00D0H         PUBLIC        PSW
+  -------         PROC          IRINIT
+  C:024BH         LINE#         51
+  C:024BH         LINE#         52
+  C:024EH         LINE#         53
+  C:0251H         LINE#         54
+  C:0254H         LINE#         55
+  C:0257H         LINE#         56
+  C:025AH         LINE#         57
+  C:025DH         LINE#         58
+  -------         ENDPROC       IRINIT
+  -------         PROC          IRTEST
+  -------         DO            
+  D:0007H         SYMBOL        ok
+  -------         ENDDO         
+  C:027BH         LINE#         64
+  C:027BH         LINE#         65
+  C:027DH         LINE#         66
+  C:0280H         LINE#         67
+  C:0280H         LINE#         68
+  -------         ENDPROC       IRTEST
+  -------         PROC          IRGETDATACODE
+  C:0281H         LINE#         74
+  C:0281H         LINE#         75
+BL51 BANKED LINKER/LOCATER V6.22                                                      07/12/2011  17:03:07  PAGE 4
+
+
+  C:0284H         LINE#         76
+  C:0286H         LINE#         77
+  -------         ENDPROC       IRGETDATACODE
+  -------         PROC          INT0ISR
+  -------         DO            
+  D:0002H         SYMBOL        timer
+  -------         ENDDO         
+  C:000EH         LINE#         94
+  C:0023H         LINE#         96
+  C:0025H         LINE#         98
+  C:0029H         LINE#         99
+  C:002BH         LINE#         100
+  C:002EH         LINE#         101
+  C:0031H         LINE#         102
+  C:0033H         LINE#         103
+  C:0036H         LINE#         104
+  C:0038H         LINE#         105
+  C:003AH         LINE#         106
+  C:0048H         LINE#         107
+  C:004BH         LINE#         108
+  C:004EH         LINE#         109
+  C:0050H         LINE#         110
+  C:0050H         LINE#         112
+  C:0055H         LINE#         113
+  C:0066H         LINE#         114
+  C:0069H         LINE#         115
+  C:0069H         LINE#         116
+  C:006CH         LINE#         117
+  C:0074H         LINE#         118
+  C:0085H         LINE#         119
+  C:0087H         LINE#         120
+  C:009CH         LINE#         121
+  C:00A2H         LINE#         122
+  C:00A4H         LINE#         123
+  C:00A4H         LINE#         124
+  C:00B7H         LINE#         125
+  C:00B9H         LINE#         126
+  C:00D4H         LINE#         127
+  C:00D9H         LINE#         128
+  C:00DCH         LINE#         129
+  C:00DCH         LINE#         130
+  C:00DCH         LINE#         131
+  C:00DCH         LINE#         132
+  C:00DEH         LINE#         133
+  -------         ENDPROC       INT0ISR
+  -------         PROC          TIME0ISR
+  C:017DH         LINE#         138
+  C:019AH         LINE#         139
+  C:019DH         LINE#         140
+  C:01A0H         LINE#         143
+  C:01D8H         LINE#         144
+  C:01E7H         LINE#         145
+  C:01EAH         LINE#         146
+  C:01EAH         LINE#         148
+  C:01ECH         LINE#         149
+  -------         ENDPROC       TIME0ISR
+  -------         ENDMOD        INFRAREDRAY
+BL51 BANKED LINKER/LOCATER V6.22                                                      07/12/2011  17:03:07  PAGE 5
+
+
+
+  -------         MODULE        ?C?LNOT
+  C:0207H         PUBLIC        ?C?LNOT
+  -------         ENDMOD        ?C?LNOT
+
+  -------         MODULE        ?C?ULCMP
+  C:0214H         PUBLIC        ?C?ULCMP
+  -------         ENDMOD        ?C?ULCMP
+
+  -------         MODULE        ?C?ULSHR
+  C:0225H         PUBLIC        ?C?ULSHR
+  -------         ENDMOD        ?C?ULSHR
+
+  -------         MODULE        ?C?LSHL
+  C:0238H         PUBLIC        ?C?LSHL
+  -------         ENDMOD        ?C?LSHL
+
+Program Size: data=17.0 xdata=0 code=642
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)
